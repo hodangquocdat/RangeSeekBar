@@ -13,19 +13,11 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        final RangeSeekBar seekBar1 = findViewById(R.id.rangeSeekBar);
-        final TextView textView1 = findViewById(R.id.textView2);
-
         final RangeSeekBar seekBar2 = findViewById(R.id.rangeSeekBar2);
         final TextView textView2 = findViewById(R.id.textView3);
 
-        final RangeSeekBar seekBar3 = findViewById(R.id.rangeSeekBar3);
-        final TextView textView3 = findViewById(R.id.textView5);
 
-        initializeSeekBar(seekBar1, textView1);
         initializeSeekBar(seekBar2, textView2);
-        initializeSeekBar(seekBar3, textView3);
 
     }
 

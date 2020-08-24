@@ -25,27 +25,32 @@ import android.view.animation.AnimationUtils;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
 
-import java.util.ArrayList;
-
 import androidx.annotation.InterpolatorRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.util.Pools;
+
+import java.util.ArrayList;
+
 import it.sephiroth.android.library.simplelogger.LoggerFactory;
 import it.sephiroth.android.library.simplelogger.LoggerFactory.LoggerType;
 
 public class RangeProgressBar extends View {
     protected static LoggerFactory.Logger logger =
-        LoggerFactory.getLogger("RangeProgressBar", BuildConfig.DEBUG ? LoggerType.Console : LoggerType.Null);
+            LoggerFactory.getLogger("RangeProgressBar", BuildConfig.DEBUG ? LoggerType.Console : LoggerType.Null);
 
     private static final int TIMEOUT_SEND_ACCESSIBILITY_EVENT = 200;
 
-    /** Interpolator used for smooth progress animations. */
+    /**
+     * Interpolator used for smooth progress animations.
+     */
     private static final DecelerateInterpolator PROGRESS_ANIM_INTERPOLATOR =
-        new DecelerateInterpolator();
+            new DecelerateInterpolator();
 
-    /** Duration of smooth progress animations. */
+    /**
+     * Duration of smooth progress animations.
+     */
     private static final int PROGRESS_ANIM_DURATION = 80;
 
     protected int mMinMaxStepSize;
@@ -78,7 +83,9 @@ public class RangeProgressBar extends View {
     private boolean mAttached;
     private boolean mRefreshIsPosted;
 
-    /** Value used to track progress animation, in the range [0...1]. */
+    /**
+     * Value used to track progress animation, in the range [0...1].
+     */
     private float mVisualStartProgress;
     private float mVisualEndProgress;
 
@@ -90,7 +97,9 @@ public class RangeProgressBar extends View {
 
     private AccessibilityEventSender mAccessibilityEventSender;
     private Drawable mProgressDrawableIndicator;
+    private Drawable mProgressDrawableIndicator2;
     private Rect mProgressIndicatorBounds;
+    private Rect mProgressIndicatorBounds2;
     private int mComputedWidth;
     protected int mPaddingBottom;
     protected int mPaddingTop;
@@ -135,8 +144,8 @@ public class RangeProgressBar extends View {
         mProgressStartMaxValue = a.getInteger(R.styleable.RangeProgressBar_range_progress_startMaxValue, -1);
 
         final int resID = a.getResourceId(
-            R.styleable.RangeProgressBar_android_interpolator,
-            android.R.anim.linear_interpolator
+                R.styleable.RangeProgressBar_android_interpolator,
+                android.R.anim.linear_interpolator
         ); // default to linear interpolator
 
         if (resID > 0) {
@@ -152,7 +161,7 @@ public class RangeProgressBar extends View {
                 mProgressTintInfo = new ProgressTintInfo();
             }
             mProgressTintInfo.mProgressTintMode = DrawableUtils.parseTintMode(a.getInt(
-                R.styleable.RangeProgressBar_android_progressTintMode, -1), null);
+                    R.styleable.RangeProgressBar_android_progressTintMode, -1), null);
             mProgressTintInfo.mHasProgressTintMode = true;
         }
 
@@ -161,7 +170,7 @@ public class RangeProgressBar extends View {
                 mProgressTintInfo = new ProgressTintInfo();
             }
             mProgressTintInfo.mProgressTintList = a.getColorStateList(
-                R.styleable.RangeProgressBar_android_progressTint);
+                    R.styleable.RangeProgressBar_android_progressTint);
             mProgressTintInfo.mHasProgressTint = true;
         }
 
@@ -170,7 +179,7 @@ public class RangeProgressBar extends View {
                 mProgressTintInfo = new ProgressTintInfo();
             }
             mProgressTintInfo.mProgressBackgroundTintMode = DrawableUtils.parseTintMode(a.getInt(
-                R.styleable.RangeProgressBar_android_progressBackgroundTintMode, -1), null);
+                    R.styleable.RangeProgressBar_android_progressBackgroundTintMode, -1), null);
             mProgressTintInfo.mHasProgressBackgroundTintMode = true;
         }
 
@@ -179,7 +188,7 @@ public class RangeProgressBar extends View {
                 mProgressTintInfo = new ProgressTintInfo();
             }
             mProgressTintInfo.mProgressBackgroundTintList = a.getColorStateList(
-                R.styleable.RangeProgressBar_android_progressBackgroundTint);
+                    R.styleable.RangeProgressBar_android_progressBackgroundTint);
             mProgressTintInfo.mHasProgressBackgroundTint = true;
         }
 
@@ -197,8 +206,8 @@ public class RangeProgressBar extends View {
         setProgressStartEndBoundaries(mProgressStartMaxValue, mProgressEndMinValue);
 
         setInitialProgress(
-            startProgress,
-            endProgress
+                startProgress,
+                endProgress
         );
 
         mInitialProgressDone = true;
@@ -255,8 +264,8 @@ public class RangeProgressBar extends View {
             for (int i = 0; i < N; i++) {
                 final int id = orig.getId(i);
                 outDrawables[i] = tileify(
-                    orig.getDrawable(i),
-                    (id == android.R.id.progress || id == android.R.id.secondaryProgress)
+                        orig.getDrawable(i),
+                        (id == android.R.id.progress || id == android.R.id.secondaryProgress)
                 );
             }
 
@@ -385,7 +394,7 @@ public class RangeProgressBar extends View {
 
     private void applyPrimaryProgressTint() {
         if (mProgressTintInfo.mHasProgressTint
-            || mProgressTintInfo.mHasProgressTintMode) {
+                || mProgressTintInfo.mHasProgressTintMode) {
             final Drawable target = getTintTarget(android.R.id.progress, true);
             if (target != null) {
                 if (mProgressTintInfo.mHasProgressTint) {
@@ -406,7 +415,7 @@ public class RangeProgressBar extends View {
 
     private void applyProgressBackgroundTint() {
         if (mProgressTintInfo.mHasProgressBackgroundTint
-            || mProgressTintInfo.mHasProgressBackgroundTintMode) {
+                || mProgressTintInfo.mHasProgressBackgroundTintMode) {
             final Drawable target = getTintTarget(android.R.id.background, false);
             if (target != null) {
                 if (mProgressTintInfo.mHasProgressBackgroundTint) {
@@ -425,7 +434,7 @@ public class RangeProgressBar extends View {
         }
     }
 
-    @SuppressWarnings ("unused")
+    @SuppressWarnings("unused")
     public void setProgressTintList(@Nullable ColorStateList tint) {
         if (mProgressTintInfo == null) {
             mProgressTintInfo = new ProgressTintInfo();
@@ -438,13 +447,13 @@ public class RangeProgressBar extends View {
         }
     }
 
-    @SuppressWarnings ("unused")
+    @SuppressWarnings("unused")
     @Nullable
     public ColorStateList getProgressTintList() {
         return mProgressTintInfo != null ? mProgressTintInfo.mProgressTintList : null;
     }
 
-    @SuppressWarnings ("unused")
+    @SuppressWarnings("unused")
     public void setProgressTintMode(@Nullable PorterDuff.Mode tintMode) {
         if (mProgressTintInfo == null) {
             mProgressTintInfo = new ProgressTintInfo();
@@ -457,13 +466,13 @@ public class RangeProgressBar extends View {
         }
     }
 
-    @SuppressWarnings ("unused")
+    @SuppressWarnings("unused")
     @Nullable
     public PorterDuff.Mode getProgressTintMode() {
         return mProgressTintInfo != null ? mProgressTintInfo.mProgressTintMode : null;
     }
 
-    @SuppressWarnings ("unused")
+    @SuppressWarnings("unused")
     public void setProgressBackgroundTintList(@Nullable ColorStateList tint) {
         if (mProgressTintInfo == null) {
             mProgressTintInfo = new ProgressTintInfo();
@@ -476,13 +485,13 @@ public class RangeProgressBar extends View {
         }
     }
 
-    @SuppressWarnings ("unused")
+    @SuppressWarnings("unused")
     @Nullable
     public ColorStateList getProgressBackgroundTintList() {
         return mProgressTintInfo != null ? mProgressTintInfo.mProgressBackgroundTintList : null;
     }
 
-    @SuppressWarnings ("unused")
+    @SuppressWarnings("unused")
     public void setProgressBackgroundTintMode(@Nullable PorterDuff.Mode tintMode) {
         if (mProgressTintInfo == null) {
             mProgressTintInfo = new ProgressTintInfo();
@@ -495,7 +504,7 @@ public class RangeProgressBar extends View {
         }
     }
 
-    @SuppressWarnings ("unused")
+    @SuppressWarnings("unused")
     @Nullable
     public PorterDuff.Mode getProgressBackgroundTintMode() {
         return mProgressTintInfo != null ? mProgressTintInfo.mProgressBackgroundTintMode : null;
@@ -583,11 +592,11 @@ public class RangeProgressBar extends View {
         }
     }
 
-    @SuppressWarnings ("WeakerAccess")
+    @SuppressWarnings("WeakerAccess")
     private static class RefreshData {
         private static final int POOL_MAX = 24;
         private static final Pools.SynchronizedPool<RefreshData> sPool =
-            new Pools.SynchronizedPool<>(POOL_MAX);
+                new Pools.SynchronizedPool<>(POOL_MAX);
 
         public int id;
         public int startValue;
@@ -614,8 +623,8 @@ public class RangeProgressBar extends View {
     }
 
     private synchronized void doRefreshProgress(
-        int id, int startValue, int endValue, boolean fromUser,
-        boolean callBackToApp, boolean animate) {
+            int id, int startValue, int endValue, boolean fromUser,
+            boolean callBackToApp, boolean animate) {
 
         logger.info("doRefreshProgress(%d, %d, %b, %b)", startValue, endValue, fromUser, animate);
 
@@ -630,8 +639,8 @@ public class RangeProgressBar extends View {
             final ValueAnimator a2 = ValueAnimator.ofFloat(mVisualEndProgress, scale2);
 
             a2.addUpdateListener(
-                animation -> setVisualProgress(
-                    android.R.id.progress, (float) a1.getAnimatedValue(), (float) a2.getAnimatedValue()));
+                    animation -> setVisualProgress(
+                            android.R.id.progress, (float) a1.getAnimatedValue(), (float) a2.getAnimatedValue()));
 
             AnimatorSet set = new AnimatorSet();
             set.playTogether(a1, a2);
@@ -664,8 +673,8 @@ public class RangeProgressBar extends View {
     }
 
     private synchronized void refreshProgress(
-        @SuppressWarnings ("SameParameterValue") int id, int startValue, int endValue, boolean fromUser,
-        boolean animate) {
+            @SuppressWarnings("SameParameterValue") int id, int startValue, int endValue, boolean fromUser,
+            boolean animate) {
         if (mUiThreadId == Thread.currentThread().getId()) {
             doRefreshProgress(id, startValue, endValue, fromUser, true, animate);
         } else {
@@ -688,7 +697,7 @@ public class RangeProgressBar extends View {
         setProgressInternal(startValue, endValue, false, false);
     }
 
-    @SuppressWarnings ("unused")
+    @SuppressWarnings("unused")
     public void setProgress(int startValue, int endValue, boolean animate) {
         setProgressInternal(startValue, endValue, false, animate);
     }
@@ -790,7 +799,7 @@ public class RangeProgressBar extends View {
         }
     }
 
-    @SuppressWarnings ("unused")
+    @SuppressWarnings("unused")
     public synchronized final void incrementEndValueBy(int diff) {
         setProgress(mStartProgress, mEndProgress + diff);
     }
@@ -803,7 +812,7 @@ public class RangeProgressBar extends View {
         mInterpolator = interpolator;
     }
 
-    @SuppressWarnings ("unused")
+    @SuppressWarnings("unused")
     public Interpolator getInterpolator() {
         return mInterpolator;
     }
@@ -830,7 +839,7 @@ public class RangeProgressBar extends View {
                 final int scrollY = getScrollY() + getPaddingTop();
 
                 invalidate(dirty.left + scrollX, dirty.top + scrollY,
-                    dirty.right + scrollX, dirty.bottom + scrollY
+                        dirty.right + scrollX, dirty.bottom + scrollY
                 );
             } else {
                 super.invalidateDrawable(dr);
@@ -858,13 +867,18 @@ public class RangeProgressBar extends View {
         int left = 0;
 
         mProgressDrawableIndicator = null;
+        mProgressDrawableIndicator2 = null;
         mProgressIndicatorBounds = null;
+        mProgressIndicatorBounds2 = null;
+
         mComputedWidth = w;
 
         if (mProgressDrawable != null) {
             mProgressDrawable.setBounds(left, top, right, bottom);
             mProgressDrawableIndicator = ((LayerDrawable) mProgressDrawable).findDrawableByLayerId(android.R.id.progress);
+            mProgressDrawableIndicator2 = ((LayerDrawable) mProgressDrawable).findDrawableByLayerId(android.R.id.secondaryProgress);
             mProgressIndicatorBounds = mProgressDrawableIndicator.getBounds();
+            mProgressIndicatorBounds2 = mProgressDrawableIndicator2.getBounds();
         }
     }
 
@@ -898,24 +912,41 @@ public class RangeProgressBar extends View {
                 final int end = (int) (mVisualEndProgress * w);
 
                 mProgressDrawableIndicator
-                    .setBounds(
-                        start,
-                        mProgressIndicatorBounds.top,
-                        mProgressOffset + end,
-                        mProgressIndicatorBounds.bottom
-                    );
-            }
+                        .setBounds(
+                                mProgressIndicatorBounds.left,
+                                mProgressIndicatorBounds.top,
+                                start,
+                                mProgressIndicatorBounds.bottom
+                        );
 
+                mProgressDrawableIndicator2
+                        .setBounds(
+                                end,
+                                mProgressIndicatorBounds2.top,
+                                mProgressIndicatorBounds2.right,
+                                mProgressIndicatorBounds2.bottom
+                        );
+            }
             d.draw(canvas);
             canvas.restoreToCount(saveCount);
         }
     }
 
+    public int getTrackStartHeight() {
+        return mProgressIndicatorBounds.bottom - mProgressIndicatorBounds.top;
+    }
+
+    public int getTrackEndHeight() {
+        return mProgressIndicatorBounds.bottom - mProgressIndicatorBounds.top;
+    }
+
+
+
     public int getProgressOffset() {
         return mProgressOffset;
     }
 
-    @SuppressWarnings ("unused")
+    @SuppressWarnings("unused")
     public void setProgressOffset(final int value) {
         logger.info("setProgressOffset(%d)", value);
         this.mProgressOffset = value;
@@ -994,7 +1025,7 @@ public class RangeProgressBar extends View {
         }
 
         public static final Parcelable.Creator<SavedState> CREATOR
-            = new Parcelable.Creator<SavedState>() {
+                = new Parcelable.Creator<SavedState>() {
             public SavedState createFromParcel(Parcel in) {
                 return new SavedState(in);
             }

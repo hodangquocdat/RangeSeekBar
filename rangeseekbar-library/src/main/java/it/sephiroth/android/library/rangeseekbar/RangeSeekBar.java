@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.Region.Op;
@@ -729,8 +730,13 @@ public class RangeSeekBar extends RangeProgressBar {
             top = oldBounds.top;
             bottom = oldBounds.bottom;
         } else {
-            top = offset;
-            bottom = offset + mThumbHeight;
+            if (which == WhichThumb.End) {
+                top = offset + mThumbHeight / 2 + getTrackEndHeight() / 2;
+                bottom = offset  + mThumbHeight * 3 / 2 + getTrackEndHeight()/2;
+            } else {
+                top = offset - mThumbHeight / 2 - getTrackEndHeight()/2;
+                bottom = offset  + mThumbHeight / 2 - getTrackEndHeight()/2;
+            }
         }
 
         int left = thumbPos;
@@ -774,32 +780,8 @@ public class RangeSeekBar extends RangeProgressBar {
 
     @Override
     void drawTrack(Canvas canvas) {
-        if (mThumbStart != null && mSplitTrack) {
-            final Rect tempRect = mTempRect1;
-
-            mThumbStart.copyBounds(tempRect);
-            tempRect.offset(mPaddingLeft - mThumbOffset, mPaddingTop);
-            tempRect.left += mThumbClipInset;
-            tempRect.right -= mThumbClipInset;
-
-            final int saveCount = canvas.save();
-            canvas.clipRect(tempRect, Op.DIFFERENCE);
-
-            mThumbEnd.copyBounds(tempRect);
-            tempRect.offset(mPaddingLeft - mThumbOffset, mPaddingTop);
-            tempRect.left += mThumbClipInset;
-            tempRect.right -= mThumbClipInset;
-
-            canvas.clipRect(tempRect, Op.DIFFERENCE);
-
-            super.drawTrack(canvas);
-            drawTickMarks(canvas);
-            canvas.restoreToCount(saveCount);
-
-        } else {
-            super.drawTrack(canvas);
-            drawTickMarks(canvas);
-        }
+        super.drawTrack(canvas);
+        drawTickMarks(canvas);
     }
 
     void drawTickMarks(Canvas canvas) {

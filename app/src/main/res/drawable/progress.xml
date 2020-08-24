@@ -1,0 +1,33 @@
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@android:id/background"
+        android:gravity="center_vertical|fill_horizontal">
+        <shape
+            android:shape="rectangle"
+            android:tint="@color/secondaryLightColor">
+            <size android:height="@dimen/sephiroth_range_progress_bar_height_material" />
+        </shape>
+    </item>
+
+
+
+    <item
+        android:id="@android:id/progress"
+        android:gravity="center_vertical|fill_horizontal">
+        <shape
+            android:shape="rectangle"
+            android:tint="@color/secondaryColor">
+            <size android:height="@dimen/sephiroth_range_progress_bar_height_material" />
+        </shape>
+    </item>
+
+    <item
+        android:id="@android:id/secondaryProgress"
+        android:gravity="center_vertical|fill_horizontal">
+        <shape
+            android:shape="rectangle"
+            android:tint="@color/primaryDarkColor">
+            <size android:height="@dimen/sephiroth_range_progress_bar_height_material" />
+        </shape>
+    </item>
+</layer-list>
